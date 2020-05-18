@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Base name of the resource such as web app name and app service plan"
+      },
+      "minLength": 2
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "S1",
+      "metadata": {
+        "description": "The SKU of App Service Plan, by default is Standard S1"
+      }
+    },
+    "location": {
+      "type": "array",
+      "defaultValue": [
+        "East US",
+        "West US"
+      ],
+      "metadata": {
+        "description": "Location for all resources"
+      }
+    },
+    "WebAppcount": {
+      "type": "int",
+      "defaultValue": 2
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "apiVersion": "2018-02-01",
+      "type": "Microsoft.Web/serverfarms",
+      "kind": "app",
+      "name": "[concat('asp-', copyIndex())]",
+      "location": "[parameters('location')[copyIndex()]]",
+      "copy": {
+        "name": "aspCopy",
+        "count": "[parameters('WebAppcount')]"
+      },
+      "properties": {
+      },
+      "dependsOn": [
+      ],
+      "sku": {
+        "name": "[parameters('sku')]"
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
