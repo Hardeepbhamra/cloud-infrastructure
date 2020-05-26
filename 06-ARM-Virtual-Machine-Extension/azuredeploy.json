@@ -56,6 +56,9 @@
       "apiVersion": "2018-11-01",
       "name": "[variables('vnetName')]",
       "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups',variables('networkSecurityGroupName'))]"
+      ],
 
       "properties": {
         "addressSpace": {
@@ -213,7 +216,7 @@
         "typeHandlerVersion": "1.9",
 
         "settings":{
-          "commandToExecute": "powershell Install-WindowsFeature -name Web-Server -IncludeAllSubFeature -IncludeManagementTools"
+          "commandToExecute": "powershell.exe Install-WindowsFeature -name Web-Server -IncludeAllSubFeature -IncludeManagementTools"
         }
       }
     }
