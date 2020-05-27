@@ -1,0 +1,43 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+
+    "adminUserName":{
+      "value": "testadmin",
+      "metadata": {
+        "description":"Virtual Machine login username"
+      }
+    },
+    "adminPassword":{
+      "value": "YOURPASSWORDGOESHERE",
+      "metadata": {
+        "description": "Virtual Machine login username"
+      }
+    },
+    "windowsOSVersion": {
+      "value": "2016-Datacenter",
+      "metadata": {
+        "description":"Windows OS Version"
+      }
+    },
+    "vmSize": {
+      "value": "Standard_A4_v2",
+      "metadata": {
+        "description":"Virtual Machine Tier/Size"
+      }
+    },
+    "location": {
+      "value": "westus",
+      "metadata": {
+        "description":"Region for Virtual Machine"
+      }
+    },
+    "addressPrefix": {
+      "value": "10.0.0.0/16"
+    },
+    "subnetPrefix": {
+      "value": "10.0.1.0/24"
+    }
+  }
+}
