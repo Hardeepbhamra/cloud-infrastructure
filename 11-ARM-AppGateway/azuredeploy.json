@@ -1,0 +1,260 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string"
+    },
+    "vnet_name": {
+      "type": "string"
+    },
+    "vnet_apiversion": {
+      "type": "string"
+    },
+    "vnet_addressprefixes": {
+      "type": "string"
+    },
+    "subnet_name": {
+      "type": "string"
+    },
+    "subnetprefix": {
+      "type": "string"
+    },
+    "pub_ip_name": {
+      "type": "string"
+    },
+    "pub_ip_api_version": {
+      "type": "string"
+    },
+    "pub_ip_sku": {
+      "type": "string"
+    },
+    "pub_ip_allocationmethod": {
+      "type": "string"
+    },
+    "pub_ip_addressversion": {
+      "type": "string"
+    },
+    "resourcegroupName": {
+      "type": "string"
+    },
+    "resourcegrouplocation": {
+      "type": "string"
+    },
+    "appgatewayname": {
+      "type": "string"
+    },
+    "appgateway_apiversion": {
+      "type": "string"
+    },
+    "sku_name": {
+      "type": "string"
+    },
+    "sku_tier": {
+      "type": "string"
+    },
+    "sku_capacity": {
+      "type": "int"
+    },
+    "gatewayIPConfiguration_Name": {
+      "type": "string"
+    },
+    "sslCert_Name": {
+      "type": "string"
+    },
+    "sslCert_Password": {
+      "type": "securestring"
+    },
+    "ssl_cert_data": {
+      "type": "securestring"
+    },
+    "frontendIPConfigurations_name": {
+      "type": "string"
+    },
+    "frontendhttpsPort_name": {
+      "type": "string"
+    },
+    "frontendhttpsPort_number": {
+      "type": "int"
+    },
+    "frontendhttpPort_name": {
+      "type": "string"
+    },
+    "frontendhttpPort_number": {
+      "type": "int"
+    },
+    "backendAddressPools_name": {
+      "type": "string"
+    },
+    "fqdn": {
+      "type": "string"
+    },
+    "backendHttpSettingsCollection_name": {
+      "type": "string"
+    },
+    "httplisteners_name": {
+      "type": "string"
+    }
+
+  },
+  "variables": {
+    "resourcegroupName": "[parameters('resourcegroupName')]",
+    "location": "[parameters('resourcegrouplocation')]"
+  },
+  "resources": [
+    {
+      "name": "[parameters('vnet_name')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "[parameters('vnet_apiversion')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnet_addressprefixes')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('subnet_name')]",
+            "properties": {
+              "addressprefix": "[parameters('subnetprefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[parameters('pub_ip_name')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "[parameters('pub_ip_api_version')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[parameters('pub_ip_sku')]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('pub_ip_allocationmethod')]",
+        "publicIPAddressVersion": "[parameters('pub_ip_addressversion')]"
+      }
+    },
+    {
+      "name": "[parameters('appgatewayname')]",
+      "type": "Microsoft.Network/applicationGateways",
+      "apiVersion": "[parameters('appgateway_apiversion')]",
+      "location": "[parameters('resourcegrouplocation')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', concat(parameters('vnet_name')))]",
+        "[resourceId('Microsoft.Network/publicIPAddresses',concat(parameters('pub_ip_name')))]"
+      ],
+      "properties": {
+        "sku": {
+          "name": "[parameters('sku_name')]",
+          "tier": "[parameters('sku_tier')]",
+          "capacity":"[parameters('sku_capacity')]"
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "[parameters('gatewayIPConfiguration_Name')]",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('vnet_name'),parameters('subnet_name'))]"
+              }
+            }
+          }
+        ],
+        "frontendIPConfigurations": [
+          {
+            "name": "[parameters('frontendIPConfigurations_name')]",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('pub_ip_name'))]"
+              }
+            }
+          }
+        ],
+        "frontendPorts":[
+          {
+            "name":"[parameters('frontendhttpsPort_name')]",
+            "properties":{
+              "port":"[parameters('frontendhttpsPort_number')]"
+            }
+          },
+          {
+            "name":"[parameters('frontendhttpPort_name')]",
+            "properties":{
+              "port":"[parameters('frontendhttpPort_number')]"
+            }
+          }
+        ],
+        "backendAddressPools":[
+          {
+            "name":"[parameters('backendAddressPools_name')]",
+            "properties":{
+              "backendAddresses":[
+                {
+                  "fqdn":"[parameters('fqdn')]"
+                }
+              ]
+            }
+          }
+        ],
+        "backendHttpSettingsCollection":[
+          {
+            "name":"[parameters('backendHttpSettingsCollection_name')]",
+            "properties":{
+                "port":"443",
+                "protocol":"Https",
+                "cookieBasedAffinity":"Enabled",
+                "requestTimeout": 120
+            }
+          }
+        ],
+        "httplisteners":[
+          {
+            "name":"[parameters('httplisteners_name')]",
+            "properties":{
+              "frontendIPConfiguration":{
+                "id":"[concat(resourceId('Microsoft.Network/applicationGateways',parameters('appgatewayname')), concat('/frontendIPConfigurations/', parameters('frontendIPConfigurations_name')))]"
+              },
+              "frontendPort":{
+                "id":"[concat(resourceId('Microsoft.Network/applicationGateways', parameters('appgatewayname')), concat('/frontendPorts/',parameters('frontendhttpsPort_name')))]"
+              },
+              "protocol":"Https",
+              "sslcertificate":{
+                "id":"[concat(resourceId('Microsoft.Network/applicationGateways', parameters('appgatewayname')), concat('/sslCertificates/',parameters('sslCert_Name')))]"
+              }
+
+            }
+          }
+        ],
+        "requestroutingrules":[
+          {
+            "name":"https_rule",
+            "properties":{
+              "ruletype":"Basic",
+              "httplistener":{
+                "id":"[concat(resourceId('Microsoft.Network/applicationGateways', parameters('appgatewayname')), concat('/httplisteners/', parameters('httplisteners_name')))]"
+              },
+              "backendAddressPool":{
+                "id":"[concat(resourceId('Microsoft.Network/applicationGateways', parameters('appgatewayname')),concat('/backendAddressPools/',parameters('backendAddressPools_name')))]"
+              },
+              "backendHttpSettings":{
+                "id":"[concat(resourceId('Microsoft.Network/applicationGateways', parameters('appgatewayname')), concat('/backendHttpSettingsCollection/',parameters('backendHttpSettingsCollection_name')))]"
+              }
+            }
+          }
+        ],
+        "sslCertificates": [
+          {
+            "name": "[parameters('sslCert_Name')]",
+            "properties": {
+              "data": "[parameters('ssl_cert_data')]",
+              "password": "[parameters('sslCert_Password')]"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+  }
+}

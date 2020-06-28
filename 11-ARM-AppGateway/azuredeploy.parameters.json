@@ -1,0 +1,100 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location":{
+      "value": "westus"
+    },
+    "vnet_name":{
+      "value": "test_vnet"
+    },
+    "vnet_apiversion":{
+      "value": "2019-11-01"
+    },
+    "vnet_addressprefixes":{
+      "value": "172.16.0.0/16"
+    },
+    "subnet_name":{
+      "value": "test_subnet"
+    },
+    "subnetprefix":{
+      "value": "172.16.1.0/24"
+    },
+    "pub_ip_name":{
+      "value": "test_pub_ip"
+    },
+    "pub_ip_api_version":{
+      "value": "2019-11-01"
+    },
+    "pub_ip_sku":{
+      "value": "Standard"
+    },
+    "pub_ip_allocationmethod":{
+      "value": "Static"
+    },
+    "pub_ip_addressversion":{
+      "value": "IPv4"
+    },
+    "resourcegroupName":{
+      "value": "test"
+    },
+    "resourcegrouplocation":{
+      "value": "WestUS"
+    },
+    "appgatewayname":{
+      "value": "test_ag"
+    },
+    "appgateway_apiversion":{
+      "value": "2019-09-01"
+    },
+    "sku_name":{
+      "value": "WAF_v2"
+    },
+    "sku_tier":{
+      "value": "WAF_v2"
+    },
+    "sku_capacity":{
+      "value": 2
+    },
+    "gatewayIPConfiguration_Name":{
+      "value": "test_gateway_ip_config"
+    },
+    "sslCert_Name":{
+      "value": "test_cert"
+    },
+    "sslCert_Password":{
+      "value": "secret"
+    },
+    "ssl_cert_data":{
+      "value": "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"
+    },
+    "frontendIPConfigurations_name":{
+      "value": "test_feipconfig"
+    },
+    "frontendhttpsPort_name":{
+      "value": "test_https_feport"
+    },
+    "frontendhttpsPort_number":{
+      "value": 443
+    },
+    "frontendhttpPort_name": {
+      "value": "test_http_feport"
+    },
+    "frontendhttpPort_number": {
+      "value": 80
+    },
+    "backendAddressPools_name": {
+      "value": "test_bpool"
+    },
+    "fqdn": {
+      "value": "www.hardeepbhamra.com"
+    },
+    "backendHttpSettingsCollection_name": {
+      "value": "test_httpsettings"
+    },
+    "httplisteners_name": {
+      "value": "test_listener_https"
+    }
+    
+  }
+}
